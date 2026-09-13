@@ -126,6 +126,105 @@
   outline-offset: 2px;
 }
 
+@media (max-width: 768px) {
+  .quick-examples-container {
+    margin-top: 1.25rem;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .quick-examples-header {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1.65rem;
+    gap: 14px;
+  }
+
+  .header-line {
+    opacity: 0.75;
+  }
+
+  .header-text {
+    font-size: 0.775rem;
+    color: var(--text-muted, #767571);
+    letter-spacing: 0.02em;
+  }
+
+  .quick-examples-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 1.85rem;
+    column-gap: 0;
+    width: 100%;
+    align-items: center;
+  }
+
+  .quick-example-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    gap: 0;
+  }
+
+  /* Hide horizontal flow divider on mobile grid */
+  .quick-example-divider {
+    display: none;
+  }
+
+  /* Clean vertical dividers between column 1-2 and 2-3 */
+  .quick-example-item:not(:nth-child(3n))::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 28px;
+    background-color: var(--border-light, #e6e5df);
+    opacity: 0.8;
+  }
+
+  .quick-example-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 4px;
+    border-radius: 8px;
+  }
+
+  .quick-example-icon {
+    width: 22px;
+    height: 22px;
+    opacity: 0.95;
+  }
+
+  .quick-example-name {
+    font-size: 0.775rem;
+    font-weight: 500;
+    color: var(--text-main, #1a1918);
+    letter-spacing: -0.01em;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .quick-example-btn:hover .quick-example-icon {
+    transform: translateY(-1px) scale(1.05);
+  }
+
+  .quick-example-btn:active {
+    transform: scale(0.95);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .quick-examples-container,
   .quick-example-item {
@@ -140,3 +239,4 @@
     transform: none;
   }
 }
+

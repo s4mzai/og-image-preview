@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import * as htmlToImage from 'html-to-image';
-import { RabbitIcon } from '@phosphor-icons/react';
+import { RabbitIcon, X } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
 import QuickExamples from './QuickExamples';
 import './App.css';
@@ -349,7 +349,7 @@ function App() {
           <div className="input-wrapper">
             <div className="input-field-container">
               <div className="input-icon">
-                <RabbitIcon size={24} />
+                <RabbitIcon size={22} />
               </div>
               <input 
                 ref={inputRef}
@@ -370,10 +370,7 @@ function App() {
                 aria-label="Clear input and preview"
                 title="Clear"
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+                <X size={14} weight="bold" />
               </button>
             </div>
             <button type="submit" className="fetch-button" disabled={loading}>
