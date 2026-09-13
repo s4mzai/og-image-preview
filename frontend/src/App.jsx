@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { RabbitIcon } from '@phosphor-icons/react';
+import QuickExamples from './QuickExamples';
 import './App.css';
 
 function App() {
@@ -28,10 +29,14 @@ function App() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let normalizedUrl = url.trim();
+  const handleSubmit = async (e, directUrl) => {
+    if (e) e.preventDefault();
+    let normalizedUrl = (typeof directUrl === 'string' ? directUrl : url).trim();
     if (!normalizedUrl) return;
+
+    if (typeof directUrl === 'string') {
+      setUrl(normalizedUrl);
+    }
 
     if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(normalizedUrl)) {
       normalizedUrl = `https://${normalizedUrl}`;
@@ -291,6 +296,12 @@ function App() {
             </button>
           </div>
         </form>
+
+        {!preview && !loading && !error && (
+          <QuickExamples onSelect={(selectedUrl) => {
+            handleSubmit(null, selectedUrl);
+          }} />
+        )}
 
         {error && (
           <div className="error-message">
