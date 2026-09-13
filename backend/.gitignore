@@ -1,0 +1,17 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Allow example env files
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+node_modules/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db

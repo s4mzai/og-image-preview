@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #1a1918; }
+    .fg { fill: #f5f4ef; }
+    .border { stroke: rgba(245, 244, 239, 0.18); }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #f5f4ef; }
+      .fg { fill: #1a1918; }
+      .border { stroke: rgba(26, 25, 24, 0.18); }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="16"/>
+  <rect class="border" x="1.5" y="1.5" width="61" height="61" rx="14.5" fill="none" stroke-width="1.5"/>
+  <text class="fg" x="32" y="34" text-anchor="middle" dominant-baseline="central" font-family="'Newsreader', Georgia, 'Times New Roman', serif" font-size="28" font-weight="600" letter-spacing="-1">OG</text>
+</svg>
