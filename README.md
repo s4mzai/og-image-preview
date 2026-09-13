@@ -1,6 +1,6 @@
 # OG Image Preview
 
-A minimal editorial web utility to fetch Open Graph metadata and generate a beautiful social preview card.
+A minimal editorial web utility to fetch Open Graph metadata, preview how links appear on social media, and export beautiful social preview cards as images.
 
 ## Project Structure
 
@@ -14,6 +14,7 @@ A minimal editorial web utility to fetch Open Graph metadata and generate a beau
 ```bash
 cd backend
 npm install
+cp .env.example .env # Optional: Configure environment variables
 npm run dev
 ```
 
