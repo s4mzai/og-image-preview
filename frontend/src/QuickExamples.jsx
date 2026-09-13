@@ -4,6 +4,7 @@ import stripeLogo from './assets/appsLogo/stripe.svg';
 import ycLogo from './assets/appsLogo/ycombinator.svg';
 import openaiLogo from './assets/appsLogo/openai.svg';
 import notionLogo from './assets/appsLogo/notion.svg';
+import { motion } from 'motion/react';
 import './QuickExamples.css';
 
 const examples = [
@@ -17,7 +18,13 @@ const examples = [
 
 export default function QuickExamples({ onSelect }) {
   return (
-    <div className="quick-examples-container">
+    <motion.div 
+      className="quick-examples-container"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] } }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+    >
       <div className="quick-examples-header">
         <div className="header-line"></div>
         <span className="header-text">Quick examples</span>
@@ -43,6 +50,6 @@ export default function QuickExamples({ onSelect }) {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { RabbitIcon } from '@phosphor-icons/react';
+import { motion, AnimatePresence } from 'motion/react';
 import QuickExamples from './QuickExamples';
 import './App.css';
 
@@ -14,7 +15,18 @@ function App() {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState(null);
   const cardRef = useRef(null);
+  const inputRef = useRef(null);
   const requestCounter = useRef(0);
+
+  const handleClear = () => {
+    setUrl('');
+    setPreview(null);
+    setError(null);
+    setExportError(null);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
   const getErrorMessage = (code, rawError) => {
     switch(code) {
@@ -151,23 +163,30 @@ function App() {
   };
 
   const renderPreview = () => {
-    if (!preview && !loading && !error) return null;
+    if (!preview && !loading) return null;
 
     if (loading) {
       return (
-        <div className="preview-container card-skeleton">
-          <div className="skeleton-image"></div>
-          <div className="skeleton-content">
-            <div className="skeleton-domain"></div>
-            <div className="skeleton-title"></div>
-            <div className="skeleton-desc"></div>
-            <div className="skeleton-desc short"></div>
+        <motion.div 
+          key="skeleton"
+          className="preview-wrapper"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="preview-container card-skeleton">
+            <div className="skeleton-image"></div>
+            <div className="skeleton-content">
+              <div className="skeleton-domain"></div>
+              <div className="skeleton-title"></div>
+              <div className="skeleton-desc"></div>
+              <div className="skeleton-desc short"></div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       );
     }
-
-    if (!preview) return null;
 
     const apiUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
     
@@ -180,138 +199,215 @@ function App() {
       : null;
 
     return (
-      <div className="preview-section">
-        <div className="preview-container" ref={cardRef}>
-          <div className="preview-image-area">
-            {imageUrl ? (
-              <img 
-                key={`${preview.requestId}-${imageUrl}`}
-                src={imageUrl} 
-                alt={`OG image for ${preview.domain}`}
-                className="og-image" 
-                crossOrigin="anonymous"
-              />
-            ) : (
-              <div className="fallback-image">
-                <span className="fallback-domain">{preview.domain}</span>
-              </div>
-            )}
-          </div>
-          <div className="og-content-area">
-            <div className="og-metadata-top">
-              <div className="og-meta-left">
-                {faviconUrl ? (
-                  <img 
-                    key={`${preview.requestId}-${faviconUrl}`}
-                    src={faviconUrl} 
-                    alt="" 
-                    className="og-favicon" 
-                    crossOrigin="anonymous" 
-                  />
-                ) : (
-                  <div className="og-favicon-fallback">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                  </div>
-                )}
-                <span className="og-domain">{preview.domain}</span>
-              </div>
-              <a href={preview.url} target="_blank" rel="noopener noreferrer" className="og-external-link" aria-label="Open original link">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-              </a>
+      <motion.div 
+        key={`preview-${preview.requestId}`}
+        className="preview-wrapper"
+        initial={{ opacity: 0, y: 12, scale: 0.99 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="preview-section">
+          <div className="preview-container" ref={cardRef}>
+            <div className="preview-image-area">
+              {imageUrl ? (
+                <img 
+                  key={`${preview.requestId}-${imageUrl}`}
+                  src={imageUrl} 
+                  alt={`OG image for ${preview.domain}`}
+                  className="og-image" 
+                  crossOrigin="anonymous"
+                />
+              ) : (
+                <div className="fallback-image">
+                  <span className="fallback-domain">{preview.domain}</span>
+                </div>
+              )}
             </div>
-            
-            <h2 className={`og-title ${!preview.metadata.title ? 'is-fallback' : ''}`}>
-              {preview.metadata.title || 'Title not provided'}
-            </h2>
-            <p className={`og-description ${!preview.metadata.description ? 'is-fallback' : ''}`}>
-              {preview.metadata.description || 'This website did not provide a description for social previews.'}
-            </p>
+            <div className="og-content-area">
+              <div className="og-metadata-top">
+                <div className="og-meta-left">
+                  {faviconUrl ? (
+                    <img 
+                      key={`${preview.requestId}-${faviconUrl}`}
+                      src={faviconUrl} 
+                      alt="" 
+                      className="og-favicon" 
+                      crossOrigin="anonymous" 
+                    />
+                  ) : (
+                    <div className="og-favicon-fallback">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                  )}
+                  <span className="og-domain">{preview.domain}</span>
+                </div>
+                <a href={preview.url} target="_blank" rel="noopener noreferrer" className="og-external-link" aria-label="Open original link">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                </a>
+              </div>
+              
+              <h2 className={`og-title ${!preview.metadata.title ? 'is-fallback' : ''}`}>
+                {preview.metadata.title || 'Title not provided'}
+              </h2>
+              <p className={`og-description ${!preview.metadata.description ? 'is-fallback' : ''}`}>
+                {preview.metadata.description || 'This website did not provide a description for social previews.'}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="card-actions-row">
-          <a href={preview.url} target="_blank" rel="noopener noreferrer" className="action-button secondary">
-            View original
-          </a>
-          <div className="action-divider"></div>
-          <button 
-            className="action-button primary-action" 
-            onClick={handleExport}
-            disabled={exporting}
+          <motion.div 
+            className="card-actions-row"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
-            {exporting ? (
-              <span className="loading-spinner-small"></span>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            )}
-            {exporting ? 'Exporting...' : 'Export as image'}
-          </button>
+            <a href={preview.url} target="_blank" rel="noopener noreferrer" className="action-button secondary">
+              View original
+            </a>
+            <div className="action-divider"></div>
+            <button 
+              className="action-button primary-action" 
+              onClick={handleExport}
+              disabled={exporting}
+            >
+              {exporting ? (
+                <span className="loading-spinner-small"></span>
+              ) : (
+                <svg className="action-icon-download" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              )}
+              {exporting ? 'Exporting...' : 'Export as image'}
+            </button>
+          </motion.div>
+          {exportError && (
+            <div className="export-error-msg">
+              {exportError}
+            </div>
+          )}
         </div>
-        {exportError && (
-          <div className="export-error-msg">
-            {exportError}
-          </div>
-        )}
-      </div>
+      </motion.div>
     );
   };
 
   return (
     <div className="app-container">
-      <header className="page-header">
+      <motion.header 
+        className="page-header"
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      >
         <div className="header-left">
           <span className="brand-mark">Open Graph</span>
         </div>
         <div className="header-tagline">
           SEE WHAT<br />YOUR LINKS SHARE.
         </div>
-      </header>
+      </motion.header>
       
       <main className="main-content">
         <div className="hero-section">
           <h1 className="hero-title">
-            Paste a link<br/>
-            See the <em>bigger picture</em>
+            <span className="hero-title-line">
+              <motion.span 
+                className="hero-title-inner"
+                initial={{ y: "105%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Paste a link
+              </motion.span>
+            </span>
+            <span className="hero-title-line">
+              <motion.span 
+                className="hero-title-inner"
+                initial={{ y: "105%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                See the <em>bigger picture</em>
+              </motion.span>
+            </span>
           </h1>
-          <p className="hero-subtitle">Fetch Open Graph metadata and generate a beautiful preview</p>
+          <motion.p 
+            className="hero-subtitle"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Fetch Open Graph metadata and generate a beautiful preview
+          </motion.p>
         </div>
 
-        <form className="fetch-form" onSubmit={handleSubmit}>
+        <motion.form 
+          className="fetch-form" 
+          onSubmit={handleSubmit}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.38, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div className="input-wrapper">
-            <div className="input-icon">
-              <RabbitIcon size={24} />
+            <div className="input-field-container">
+              <div className="input-icon">
+                <RabbitIcon size={24} />
+              </div>
+              <input 
+                ref={inputRef}
+                type="text" 
+                placeholder="https://github.com" 
+                className="url-input"
+                required
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className={`clear-button ${url ? 'visible' : ''}`}
+                onClick={handleClear}
+                tabIndex={url ? 0 : -1}
+                aria-hidden={!url}
+                aria-label="Clear input and preview"
+                title="Clear"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
-            <input 
-              type="text" 
-              placeholder="https://github.com" 
-              className="url-input"
-              required
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              disabled={loading}
-            />
             <button type="submit" className="fetch-button" disabled={loading}>
               <span className="fetch-button-text">Preview</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </button>
           </div>
-        </form>
+        </motion.form>
 
-        {!preview && !loading && !error && (
-          <QuickExamples onSelect={(selectedUrl) => {
-            handleSubmit(null, selectedUrl);
-          }} />
-        )}
+        <AnimatePresence mode="wait">
+          {!preview && !loading && !error && (
+            <QuickExamples 
+              key="quick-examples"
+              onSelect={(selectedUrl) => {
+                handleSubmit(null, selectedUrl);
+              }} 
+            />
+          )}
 
-        {error && (
-          <div className="error-message">
-            <p>{error}</p>
-          </div>
-        )}
+          {error && (
+            <motion.div 
+              key="error-box"
+              className="error-message"
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <p>{error}</p>
+            </motion.div>
+          )}
 
-        <div className="preview-wrapper">
           {renderPreview()}
-        </div>
+        </AnimatePresence>
       </main>
 
     </div>
