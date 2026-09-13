@@ -45,7 +45,7 @@ Left side:
 
 -   Brand mark: `OG`
 -   Thin horizontal divider
--   Small label: `IMAGE FETCHER`
+-   Small label: `IMAGE PREVIEW`
 
 Right side:
 
