@@ -32,6 +32,7 @@ function App() {
     switch(code) {
       case 'INVALID_URL': return "Please enter a valid URL.";
       case 'SSRF_BLOCKED': return "For security reasons, fetching this internal or private URL is not allowed.";
+      case 'REDIRECT_NO_LOCATION': return "This URL redirects but didn't tell us where to go. Try the full address (e.g. with \"www.\") instead.";
       case 'TOO_MANY_REDIRECTS': return "The website redirected too many times.";
       case 'TIMEOUT': return "The website took too long to respond. Please try again later.";
       case 'HTTP_403_FORBIDDEN': return "The website blocked our request. It may have aggressive bot protection.";

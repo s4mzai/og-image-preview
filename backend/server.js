@@ -152,10 +152,7 @@ async function fetchWithSSRFProtection(targetUrl, signal, maxRedirects = 5, redi
   });
 
   // Handle redirects manually
-  if (response.status >= 300 && response.status < 400 && response.headers.has('location')) {
-    const location = response.headers.get('location');
-    const nextUrl = new URL(location, targetUrl).href;
-    
+  if (response.status >= 300 && response.status < 400) {
     // Discard body of the redirect to prevent socket leaks
     if (response.body && typeof response.body.cancel === 'function') {
       await response.body.cancel();
@@ -163,6 +160,19 @@ async function fetchWithSSRFProtection(targetUrl, signal, maxRedirects = 5, redi
       await response.arrayBuffer().catch(() => {});
     }
 
+    if (!response.headers.has('location')) {
+      // 3xx with no Location header — can't follow, and the tiny body has no OG tags.
+      // Surface this as a distinct error so callers can show a meaningful message
+      // instead of silently returning empty metadata.
+      const error = new Error(
+        `Server responded with a ${response.status} redirect but did not provide a destination (no Location header). Try using the full URL (e.g. with "www.").`
+      );
+      error.code = 'ERR_REDIRECT_NO_LOCATION';
+      throw error;
+    }
+
+    const location = response.headers.get('location');
+    const nextUrl = new URL(location, targetUrl).href;
     return fetchWithSSRFProtection(nextUrl, signal, maxRedirects, redirectsCount + 1);
   }
 
@@ -207,7 +217,7 @@ async function readStreamWithLimit(response) {
 
 // Fetch HTML endpoint
 app.post("/api/fetch-html", async (req, res) => {
-  let { url } = req.body;
+  let { url } = req.body ?? {};
   
   if (!url || typeof url !== 'string') {
     return res.status(400).json({ code: "INVALID_URL", error: "URL is required" });
@@ -328,6 +338,12 @@ app.post("/api/fetch-html", async (req, res) => {
     
     if (error.code === 'ERR_SSRF_BLOCKED') {
       return res.status(403).json({ code: "SSRF_BLOCKED", error: error.message });
+    }
+    if (error.code === 'ERR_REDIRECT_NO_LOCATION') {
+      return res.status(400).json({
+        code: "REDIRECT_NO_LOCATION",
+        error: error.message
+      });
     }
     if (error.code === 'ERR_TOO_MANY_REDIRECTS') {
       return res.status(400).json({ code: "TOO_MANY_REDIRECTS", error: "Too many redirects." });
