@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://og-image-preview-ten.vercel.app/sitemap.xml
